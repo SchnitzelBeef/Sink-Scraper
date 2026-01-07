@@ -1,0 +1,19 @@
+[ 2026-01-07 13:51:41] -> Parameters from  "parameters.json" loaded successfully
+{"BLUR": 7,
+ "CUTOFF": 255,
+ "LAYERS": 255,
+ "MAX_PICTURE_HEIGHT": 4.8,
+ "MIN_PICTURE_HEIGHT": 0.2,
+ "TARGET_CONTRAST_BRIGHTNESS": 68}
+[ 2026-01-07 13:51:41] -> Image "example.png" loaded and scaled successfully
+[ 2026-01-07 13:51:41] -> Base scraper board model from  "scraper_empty.stl" loaded, rotated, and scaled successfully
+Cuda selected
+[ 2026-01-07 13:51:42] -> FBA model build successfully
+[ 2026-01-07 13:51:43] -> Resnet model "DeepLabV3_ResNet101_Weights.DEFAULT" build successfully
+Average_brightness: 40.91
+Contrast mod set at: 1.66
+[ 2026-01-07 13:53:42] -> Person cut out successfully
+[ 2026-01-07 13:55:10] -> STL model created successfully
+[ 2026-01-07 13:55:10] -> STL model saved successfully as example.stl in ./stls/
+
+[ 2026-01-07 13:55:10] * All done!

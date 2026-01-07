@@ -1,0 +1,8 @@
+# Must be run via anaconda prompt
+numpy
+opencv-python
+matplotlib
+torch
+torchvision
+scipy
+numpy-stl

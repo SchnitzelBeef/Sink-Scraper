@@ -1,0 +1,3 @@
+[submodule "sinkscraper/FBA_Matting"]
+	path = sinkscraper/FBA_Matting
+	url = https://github.com/MarcoForte/FBA_Matting

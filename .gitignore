@@ -1,0 +1,10 @@
+pictures/*
+!pictures/example.png
+!pictures/example_output.png
+scraper models/*
+!scraper models/empty_scraper.stl
+stls/*
+!stls/example.stl
+log.txt
+sinkscraper/__pycache__
+FBA.pth

@@ -1,0 +1,8 @@
+{ 
+    "BLUR" : 7,
+    "MIN_PICTURE_HEIGHT"  : 0.2,
+    "MAX_PICTURE_HEIGHT" : 4.8,
+    "LAYERS" : 255,
+    "CUTOFF" : 255,
+    "TARGET_CONTRAST_BRIGHTNESS" : 68
+}
