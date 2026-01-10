@@ -49,3 +49,10 @@ Image after applying resnet, FBA matting and other picture processing:
 Final stl:
 
 <img src="example/example_7_stl.png" height="200px"/>
+
+-----------------------------------
+## Printing
+
+For printing I recommend printing in TPU at slow speeds (I usually do 30mm/s and 15mm/s for initial two layers) and layer height at 0.12mm.
+I've scaled all the models to 130% on the X and Y axis while keeping the Z axis at 100%, since this gives a larger and more natural product.
+Be prepared to clean up a few strings afterwards. Good luck :-)
