@@ -1,5 +1,5 @@
 { 
-    "BLUR" : 7,
+    "BLUR" : 4,
     "MIN_PICTURE_HEIGHT"  : 0.2,
     "MAX_PICTURE_HEIGHT" : 4.8,
     "LAYERS" : 255,

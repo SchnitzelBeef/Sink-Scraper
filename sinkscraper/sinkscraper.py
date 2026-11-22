@@ -48,11 +48,13 @@ class buildScraper:
                  , filename
                  , save_intermediate_pictures = False
                  , show_intermediate_pictures = False
+                 , no_cut = False
                  , log = True):
         self.log = log
         self.log_file = []
         self.save_intermediate_pictures = save_intermediate_pictures
         self.show_intermediate_pictures = show_intermediate_pictures
+        self.no_cut = no_cut
         self.file = filename
 
         self.params = self.loadParameters()
@@ -110,8 +112,10 @@ class buildScraper:
 
     def loadModelImage(self):
         """ Loads image to model. """
-
-        img_orig = cv2.imread("./pictures/" + self.file, 1)
+        if self.no_cut:
+            img_orig = cv2.imread("./pictures/" + self.file, cv2.IMREAD_UNCHANGED)
+        else:
+            img_orig = cv2.imread("./pictures/" + self.file, 1)
         self.logMessage(f"Image \"{self.file}\" loaded and scaled successfully")
         return img_orig
 
@@ -151,46 +155,49 @@ class buildScraper:
 
         os.chdir("./pictures/")
 
-        # Load smaller version of the image for Resnet model
-        k = min(1.0, 1024/max(self.image.shape[0], self.image.shape[1]))
-        img = cv2.resize(self.image, None, fx=k, fy=k, interpolation=cv2.INTER_LANCZOS4)
+        if not self.no_cut:
+            # Load smaller version of the image for Resnet model
+            k = min(1.0, 1024/max(self.image.shape[0], self.image.shape[1]))
+            img = cv2.resize(self.image, None, fx=k, fy=k, interpolation=cv2.INTER_LANCZOS4)
 
-        deeplab_preprocess = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
+            deeplab_preprocess = transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ])
 
-        def apply_deeplab(deeplab, img, device):
-            input_tensor = deeplab_preprocess(img)
-            input_batch = input_tensor.unsqueeze(0)
-            with torch.no_grad():
-                output = deeplab(input_batch.to(device))['out'][0]
-            output_predictions = output.argmax(0).cpu().numpy()
-            return (output_predictions == 15)
-        
-        # Apply Resnet model
-        mask = apply_deeplab(self.resnet_model, img, self.device)
+            def apply_deeplab(deeplab, img, device):
+                input_tensor = deeplab_preprocess(img)
+                input_batch = input_tensor.unsqueeze(0)
+                with torch.no_grad():
+                    output = deeplab(input_batch.to(device))['out'][0]
+                output_predictions = output.argmax(0).cpu().numpy()
+                return (output_predictions == 15)
+            
+            # Apply Resnet model
+            mask = apply_deeplab(self.resnet_model, img, self.device)
 
-        # Compute trimaps of image for FBA model
-        trimap = np.zeros((mask.shape[0], mask.shape[1], 2))
-        trimap[:, :, 1] = mask > 0
-        trimap[:, :, 0] = mask == 0
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(25,25))
-        trimap[:, :, 0] = cv2.erode(trimap[:, :, 0], kernel)
-        trimap[:, :, 1] = cv2.erode(trimap[:, :, 1], kernel)
-        trimap_im =  trimap[:,:,1] + (1-np.sum(trimap,-1))/2
+            # Compute trimaps of image for FBA model
+            trimap = np.zeros((mask.shape[0], mask.shape[1], 2))
+            trimap[:, :, 1] = mask > 0
+            trimap[:, :, 0] = mask == 0
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(25,25))
+            trimap[:, :, 0] = cv2.erode(trimap[:, :, 0], kernel)
+            trimap[:, :, 1] = cv2.erode(trimap[:, :, 1], kernel)
+            trimap_im =  trimap[:,:,1] + (1-np.sum(trimap,-1))/2
 
-        # Apply matting to image
-        _, _, alpha = pred((img/255.0)[:, :, ::-1], trimap, self.fba_model)
+            # Apply matting to image
+            _, _, alpha = pred((img/255.0)[:, :, ::-1], trimap, self.fba_model)
 
-        # Resize back to original size
-        img_ = self.image.astype(np.float32)/255
-        alpha_ = cv2.resize(alpha, (img_.shape[1], img_.shape[0]), cv2.INTER_LANCZOS4)
-        fg_alpha = np.concatenate([img_, alpha_[:, :, np.newaxis]], axis=2)
+            # Resize back to original size
+            img_ = self.image.astype(np.float32)/255
+            alpha_ = cv2.resize(alpha, (img_.shape[1], img_.shape[0]), cv2.INTER_LANCZOS4)
+            fg_alpha = np.concatenate([img_, alpha_[:, :, np.newaxis]], axis=2)
 
-        # Calculate grayscale image
-        img_gray = (fg_alpha*255).astype(np.uint8) 
-        
+            # Calculate grayscale image
+            img_gray = (fg_alpha*255).astype(np.uint8) 
+        else:
+            img_gray = self.image
+
         # Adjust for RGB skewness of our human eyeballs 
         rows, cols = img_gray.shape[:2]
         avg_brightness = 0
@@ -219,14 +226,18 @@ class buildScraper:
         # Show intermediate pictures
         if self.show_intermediate_pictures:
             plt.title("Original")
-            plt.imshow(self.image[:, :, ::-1])
-            plt.show()
-            plt.title("Mask")
-            plt.imshow(mask, cmap="gray")
-            plt.show()
-            plt.title("Trimap")
-            plt.imshow(trimap_im, cmap='gray', vmin=0, vmax=1)
-            plt.show()
+            if self.no_cut:
+                plt.imshow(self.image[:, :, [2, 1, 0, 3]])
+                plt.show()
+            else:
+                plt.imshow(self.image[:, :, ::-1])
+                plt.show()
+                plt.title("Mask")
+                plt.imshow(mask, cmap="gray")
+                plt.show()
+                plt.title("Trimap")
+                plt.imshow(trimap_im, cmap='gray', vmin=0, vmax=1)
+                plt.show()
             plt.title("Gray")
             plt.imshow(img_gray, cmap='gray', vmin=0, vmax=1)
             plt.show()

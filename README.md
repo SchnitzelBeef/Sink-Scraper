@@ -1,18 +1,20 @@
 # Sink-scraper builder
 -----------------------------------
 ### Builds an STL model of a sink-scraper with a model corresponding to a picture of a person in the center. 
-OBS: Currently only accepts 500x600 image. 
+OBS: Currently only accepts 500x600 image and files cannot contain special characters
 
-To run, download and open "Anaconda promt" before running in the terminal:
+To run, download and open "Anaconda PowerShell promt" before running in the terminal:
 ```
-python -m sinkscraper [-h] [-sh] [-sa] [file]
+python -m sinkscraper [-h] [-sh] [-sa] [-nc] [file]
 ```
 
 -sh flag shows intermediate pictures
 
 -sa flag saves the intermediate picture produced after performing all image modifications
 
-python -m sinkscraper -h prints this information
+-nc flag removes resnet model so it does not cut out person
+
+"python -m sinkscraper -h" prints this information
 
 -----------------------------------
 
@@ -32,8 +34,7 @@ Known "good" configuration for parameters - feel free to modify in parameters.js
 
 
 The board is 1.6 units high as standard
-
-I've had a lot of success in printing these models on my 3D printer, but since I've only been printing other people so far, I will not show any of the results here :-)
+Scaling to 140x afterwards and printing in TPU gives good results.
 
 -----------------------------------
 ## Example
