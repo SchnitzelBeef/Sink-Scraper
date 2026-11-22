@@ -33,8 +33,7 @@ Known "good" configuration for parameters - feel free to modify in parameters.js
 > TARGET_CONTRAST_BRIGHTNESS : 68       # A target for the brightness of the picture - used for contrast. 
 
 
-The board is 1.6 units high as standard
-Scaling to 140x afterwards and printing in TPU gives good results.
+
 
 -----------------------------------
 ## Example
@@ -54,6 +53,6 @@ Final stl:
 -----------------------------------
 ## Printing
 
-For printing I recommend printing in TPU at slow speeds (I usually do 30mm/s and 15mm/s for initial two layers) and layer height at 0.12mm.
-I've scaled all the models to 120% on the X and Y axis while keeping the Z axis at 100%, since this gives a larger and more natural product.
-Be prepared to clean up a few strings afterwards. Good luck :-)
+The board is 1.6 units high as standard
+Scaling to 140x afterwards and printing in TPU gives good results.
+Print in slow speeds (30mm/s and 15mm/s for initial two layers) and layer height at 0.16mm.
